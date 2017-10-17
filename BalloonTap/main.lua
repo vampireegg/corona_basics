@@ -43,6 +43,7 @@ balloon.myName = "balloon"
 
 
 physics.start()
+physics.setGravity( 0, 0) 
 
 physics.addBody( platform, "static" )
 physics.addBody( balloon, "dynamic", { radius=50} )
@@ -50,8 +51,9 @@ for i = 1, wallcount do
 	physics.addBody( walls[i], "static" )
 end
 
-local function pushBalloon()
-	balloon:applyLinearImpulse( 0, -1, balloon.x, balloon.y )
+local function pushBalloon(event )
+	--balloon:applyLinearImpulse( event.x - balloon.x, event.y - balloon.y, balloon.x, balloon.y )
+	balloon:setLinearVelocity( (balloon.x - event.x) * 5, (balloon.y - event.y) * 5)
 	--balloon.x = balloon.x + 20
 	--balloon.y = balloon.y - 10
 	
@@ -93,21 +95,25 @@ balloon:addEventListener( "tap", pushBalloon )
 local function makedynamic( event )
 	--physics.addBody( event.other, "dynamic", { radius=50} )
 	local obj = event.source.params.myParam1
-	obj.alpha = 0.5
-	--obj.fill = paint2
-	physics.removeBody(obj)
-	physics.addBody( obj, "dynamic", { bounce=0.2} )
-	obj:applyLinearImpulse( 0, .03, obj.x, obj.y )
-	--event.source.params.myParam1.x = event.source.params.myParam1.x + 100
+	obj.alpha = obj.alpha - 0.3
+	if(obj.alpha <= 0) then
+		obj:removeSelf()
+	else
+		--obj.fill = paint2
+		physics.removeBody(obj)
+		physics.addBody( obj, "dynamic", { bounce=0.2} )
+		obj:applyLinearImpulse( 0, .03, obj.x, obj.y )
+		--event.source.params.myParam1.x = event.source.params.myParam1.x + 100
 
-	local emitter = display.newEmitter( emitterParams )
+		local emitter = display.newEmitter( emitterParams )
 
-	-- Center the emitter within the content area
-	emitter.x = obj.x
-	emitter.y = obj.y
-	
-	tapCount = tapCount + 1
-	tapText.text = tapCount
+		-- Center the emitter within the content area
+		emitter.x = obj.x
+		emitter.y = obj.y
+		
+		tapCount = tapCount + 1
+		tapText.text = tapCount
+	end
 end
 
 

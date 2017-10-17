@@ -5,6 +5,7 @@
 -----------------------------------------------------------------------------------------
 
 local tapCount = 0
+local physics = require( "physics" )
 
 local background = display.newImageRect( "background.png", 360, 570 )
 background.x = display.contentCenterX
@@ -12,6 +13,7 @@ background.y = display.contentCenterY
 
 
 local paint = { 1, 0, 0.5 }
+local paint2 = { 0, 0, 0.5 }
 local wallcount = 10
 local walls = {}
 for i = 1,wallcount do
@@ -36,7 +38,7 @@ balloon.y = display.contentCenterY
 balloon.alpha = 0.8
 balloon.myName = "balloon"
 
-local physics = require( "physics" )
+
 physics.start()
 
 physics.addBody( platform, "static" )
@@ -55,12 +57,24 @@ end
 
 balloon:addEventListener( "tap", pushBalloon )
 
+local function makedynamic( event )
+  --physics.addBody( event.other, "dynamic", { radius=50} )
+  local obj = event.source.params.myParam1
+  obj.fill = paint2
+  physics.removeBody(obj)
+  physics.addBody( obj, "dynamic", { bounce=0.2} )
+  obj:applyLinearImpulse( 0, .03, obj.x, obj.y )
+  --event.source.params.myParam1.x = event.source.params.myParam1.x + 100
+end
+
+
 local function onLocalCollision( self, event ) 
     if ( event.phase == "began" ) then
-        print( self.myName .. ": collision began with " .. event.other.myName )
- 
+        print( self.myName .. ": collision began with " .. event.other.myName .. " x = " .. event.other.x .. " y = " .. event.other.y)
     elseif ( event.phase == "ended" ) then
-        print( self.myName .. ": collision ended with " .. event.other.myName )
+        print( self.myName .. ": collision ended with " .. event.other.myName  .. " x = " .. event.other.x .. " y = " .. event.other.y)
+		local tm = timer.performWithDelay( 50, makedynamic )
+		tm.params = { myParam1 = event.other }
     end
 end
  

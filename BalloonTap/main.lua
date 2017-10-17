@@ -28,7 +28,7 @@ end
 
 
 local tapText = display.newText( tapCount, display.contentCenterX, 20, native.systemFont, 40 )
-tapText:setFillColor( 0, 0, 0 )
+tapText:setFillColor( .7, .8, 0 )
 
 local platform = display.newImageRect( "platform.png", 300, 20 )
 platform.x = display.contentCenterX
@@ -54,8 +54,7 @@ local function pushBalloon()
 	balloon:applyLinearImpulse( 0, -1, balloon.x, balloon.y )
 	--balloon.x = balloon.x + 20
 	--balloon.y = balloon.y - 10
-	tapCount = tapCount + 1
-	tapText.text = tapCount
+	
 end
 
 local emitterParams = {
@@ -94,6 +93,7 @@ balloon:addEventListener( "tap", pushBalloon )
 local function makedynamic( event )
 	--physics.addBody( event.other, "dynamic", { radius=50} )
 	local obj = event.source.params.myParam1
+	obj.alpha = 0.5
 	--obj.fill = paint2
 	physics.removeBody(obj)
 	physics.addBody( obj, "dynamic", { bounce=0.2} )
@@ -105,6 +105,9 @@ local function makedynamic( event )
 	-- Center the emitter within the content area
 	emitter.x = obj.x
 	emitter.y = obj.y
+	
+	tapCount = tapCount + 1
+	tapText.text = tapCount
 end
 
 
